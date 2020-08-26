@@ -1,0 +1,12 @@
+// Scopes for add-ons need to be added in oauthScopes attribute, as shown below, depending on the needs of the Add-On
+
+{
+  "timeZone": "America/Indiana/Indianapolis",
+  "dependencies": {},
+  "exceptionLogging": "STACKDRIVER",
+  "oauthScopes": [
+    "https://www.googleapis.com/auth/spreadsheets",
+    "https://www.googleapis.com/auth/forms.currentonly"
+  ],
+  "runtimeVersion": "V8"
+}
