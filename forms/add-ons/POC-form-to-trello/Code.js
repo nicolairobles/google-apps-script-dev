@@ -181,7 +181,7 @@ function generateTrelloCard(id, email, dueDate, data, token, list) {
   var cardData = {
     name: "Form Submission: " + email, //(required) Valid Values: a string with a length from 1 to 16384
     desc: data.reduce(
-      (acc, item) => (item ? `${acc}\n**${item[0]}:** ${item[1]}` : ""),
+      (acc, item) => (item ? `${acc}\n**${item[0]}:** ${item[1]}` : acc),
       "Form Responses:\n----------------"
     ), //(optional )Valid Values: a string with a length from 0 to 16384
     pos: "top", //(optional) Default: bottom Valid Values: A position. top, bottom, or a positive number.
