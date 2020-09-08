@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top" />
+    <link
+      rel="stylesheet"
+      href="https://ssl.gstatic.com/docs/script/css/add-ons1.css"
+    />
+    <!-- The CSS package above applies Google styling to buttons and other elements. -->
+    <style>
+      .branding-below {
+        bottom: 54px;
+        top: 0;
+      }
+
+      .branding-text {
+        left: 7px;
+        position: relative;
+        top: 3px;
+      }
+
+      .logo {
+        vertical-align: middle;
+      }
+
+      .width-100 {
+        width: 100%;
+        box-sizing: border-box;
+        -webkit-box-sizing: border-box;
+        -moz-box-sizing: border-box;
+      }
+
+      label {
+        font-weight: bold;
+      }
+
+      #creator-options,
+      #respondent-options {
+        background-color: #eee;
+        border-color: #eee;
+        border-width: 5px;
+        border-style: solid;
+        display: none;
+      }
+
+      #creator-email,
+      #respondent-email,
+      #button-bar,
+      #submit-subject {
+        margin-bottom: 10px;
+      }
+
+      #response-step {
+        display: inline;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="sidebar branding-below">
+      <form>
+        <div class="block">
+          <button class="action" id="trello-authenticate">
+            Authenticate With Trello
+          </button>
+          <div class="block" id="trello-boards"></div>
+        </div>
+
+        <div class="block">
+          <i>Forms to Trello - Proof Of Concept</i><br />
+          Created by Nielsen.
+        </div>
+      </form>
+    </div>
+
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script src="//api.trello.com/1/client.js?key=dd86a34bbfc0f136e881479d9d4436ec"></script>
+
+    <script>
+      function getBoard(boardId, userId) {
+        Trello.boards.get(boardId + "/lists", function (boardInfo) {
+          $("#trello-boards").html("<b>Choose a List:</b><br />");
+          boardInfo.forEach((list) => {
+            $("#trello-boards").append(
+              `<a href="#" onClick="chooseList('${list.id}','${userId}')">${list.name}</a><br />`
+            );
+          });
+        });
+      }
+
+      function chooseList(listId, memberId) {
+        saveSettingsToServer(Trello.token(), listId, memberId);
+        $("#trello-boards").html("Settings Saved");
+      }
+
+      function trelloAuthenticate(settings) {
+        if (Trello.authorized()) {
+          Trello.deauthorize();
+          $("#trello-authenticate").html("Authorize With Trello");
+          $("#trello-boards").html("");
+          return;
+        }
+
+        Trello.authorize({
+          type: "popup",
+          expiration: "never",
+          success: () => {
+            $("#trello-authenticate").html("Logout");
+            Trello.members.get("me", function (member) {
+              Trello.members.get("me/boards", function (allBoards) {
+                $("#trello-boards").html("<b>Choose a Trello Board:</b><br />");
+                allBoards.forEach((board) => {
+                  $("#trello-boards").append(
+                    `<a href="#" onClick="getBoard('${board.id}', '${member.id}')">${board.name}</a><br/>`
+                  );
+                });
+              });
+            });
+          },
+          scope: { write: true, read: true },
+        });
+      }
+
+      function saveSettingsToServer(token, list, userId) {
+        var settings = {
+          token: token,
+          list: list,
+          userId: userId,
+        };
+
+        // Save the settings on the server
+        google.script.run
+          .withSuccessHandler(function (msg, element) {
+            console.log("token saved");
+          })
+          .withFailureHandler(function (msg, element) {
+            console.log("token not saved");
+          })
+          .withUserObject(this)
+          .saveSettings(settings);
+      }
+
+      $(function () {
+        $("#trello-authenticate").click(trelloAuthenticate);
+
+        if (Trello.authorized()) {
+          $("#trello-authenticate").html("Logout");
+        }
+      });
+    </script>
+  </body>
+</html>
