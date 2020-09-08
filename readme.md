@@ -8,7 +8,7 @@ Overview: Typically you work on Google Apps Scripts in the browser, but to submi
 2. **Project Location**: Add your project in the appropriate folder. If you are working on a Google Docs Add-On, place your project inside google-docs > add-ons
 3. **Pull Request**: When you are ready for a submission, make a pull request so I get notified and can make comments/approve your pull request.
 
-## Manual Updates
+## Alternative Contribution Method: Manual Updates
 - Just edit in Github and submit pull request manually
 
 ## Using glacp cli: https://developers.google.com/apps-script/guides/clasp
